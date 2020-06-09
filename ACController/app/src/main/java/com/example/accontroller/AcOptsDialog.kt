@@ -11,11 +11,7 @@ val NUM_OPTS = 5
 class AcOptsDialog(var pos: Int = NUM_OPTS) : DialogFragment() {
 
     interface SingleChoiceListener {
-        fun onPosBtnClick(
-            opts: Array<String?>?,
-            pos: Int
-        )
-
+        fun onPosBtnClick(pos: Int)
     }
 
     var mListener: SingleChoiceListener? = null
@@ -38,7 +34,7 @@ class AcOptsDialog(var pos: Int = NUM_OPTS) : DialogFragment() {
             .setSingleChoiceItems(opts, pos,
                 DialogInterface.OnClickListener { _, i -> pos = i })
             .setPositiveButton("Ok", DialogInterface.OnClickListener { _, _ ->
-                    mListener!!.onPosBtnClick(opts, pos)
+                    mListener!!.onPosBtnClick(pos)
                 })
             .setNegativeButton("Cancel") {
                     interf, _ -> interf.dismiss()

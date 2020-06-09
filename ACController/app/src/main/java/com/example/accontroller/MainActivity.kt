@@ -39,15 +39,30 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         }
     }
 
-    override fun onPosBtnClick(opts: Array<String?>?, pos: Int) {
+    /**
+     * overridden interface function that updates status value
+     */
+    override fun onPosBtnClick(pos: Int) {
         currStateNum = pos
-        status!!.setText(opts!![pos])
+        status!!.setText(OPTS[pos])
+
+        sendState() // TODO implement sendState()
     }
 
+    /**
+     * fetches state from arduino
+     */
     fun fetchState() {
         currStateNum = 5
         Handler().postDelayed({
             status!!.setText(OPTS[5])
         }, 3000)
+    }
+
+    /**
+     * sends state to arduino and awaits confirmation of success
+     */
+    fun sendState() {
+
     }
 }
