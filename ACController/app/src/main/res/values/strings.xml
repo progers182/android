@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">AC Controller</string>
+    <string name="change_state">Change A/C State</string>
+    <string name="state_display">Current State: </string>
+    <string name="curr_state"> Loading</string>
+    <string-array name="ac_opts">
+        <item>Low Vent</item>
+        <item>High Vent</item>
+        <item>Low Cool</item>
+        <item>High Cool</item>
+        <item>Pump</item>
+        <item>Off</item>
+    </string-array>
+
 </resources>
