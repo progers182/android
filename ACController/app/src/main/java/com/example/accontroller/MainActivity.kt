@@ -8,8 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONArray
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
@@ -59,27 +63,28 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
      * fetches state from arduino
      */
     fun fetchState() {
-        currStateNum = 5
-        Handler().postDelayed({
-            status!!.setText(OPTS[5])
-        }, 3000)
-
-        val textView = findViewById<TextView>(R.id.textView);
+        status = findViewById(R.id.curr_state)
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(this)
         val url = "http://www.phrogers.com/ac/api/state.php"
 
         // Request a string response from the provided URL.
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                // Display the first 500 characters of the response string.
-                textView.text = "Response is: ${response}"
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
+            Response.Listener { response: JSONObject ->
+                if (response.has("curr_states")) {
+                    val pos = response["curr_states"].toString().toInt()
+                    status!!.setText(OPTS[pos])
+                }
+                else {
+                    status!!.setText(R.string.curr_state)
+                }
             },
-            Response.ErrorListener { textView.text = "That didn't work!" })
-
+            Response.ErrorListener { error ->
+                // TODO: Handle error
+            }
+        )
         // Add the request to the RequestQueue.
-        queue.add(stringRequest)
+        queue.add(jsonObjectRequest)
 
     }
 
