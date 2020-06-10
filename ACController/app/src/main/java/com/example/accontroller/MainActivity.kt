@@ -6,6 +6,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -46,7 +52,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         currStateNum = pos
         status!!.setText(OPTS[pos])
 
-        sendState() // TODO implement sendState()
+        sendState()
     }
 
     /**
@@ -57,6 +63,24 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         Handler().postDelayed({
             status!!.setText(OPTS[5])
         }, 3000)
+
+        val textView = findViewById<TextView>(R.id.textView);
+        // Instantiate the RequestQueue.
+        val queue = Volley.newRequestQueue(this)
+        val url = "http://www.phrogers.com/ac/api/state.php"
+
+        // Request a string response from the provided URL.
+        val stringRequest = StringRequest(
+            Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                // Display the first 500 characters of the response string.
+                textView.text = "Response is: ${response}"
+            },
+            Response.ErrorListener { textView.text = "That didn't work!" })
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+
     }
 
     /**

@@ -43,4 +43,12 @@
             android:text="@string/change_state" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="381dp"
+        android:layout_height="226dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="164dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
