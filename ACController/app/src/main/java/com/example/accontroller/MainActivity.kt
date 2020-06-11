@@ -1,23 +1,20 @@
 package com.example.accontroller
 
 import android.os.Bundle
-import android.os.Handler
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONArray
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.*
-import kotlin.concurrent.timer
+import org.w3c.dom.Text
+
 
 val OPTS = arrayOf(
     "Low Vent",
@@ -55,8 +52,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     override fun onPosBtnClick(pos: Int) {
         currStateNum = pos
         status!!.setText(OPTS[pos])
-
-        sendState()
+        sendState(pos)
     }
 
     /**
@@ -68,7 +64,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         val queue = Volley.newRequestQueue(this)
         val url = "http://phrogers.com/ac/api/data/state.php"
 
-        // Request a string response from the provided URL.
+        // Request a JSON response from the provided URL.
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             Response.Listener { response: JSONObject ->
                 if (response.has("state")) {
@@ -92,7 +88,35 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     /**
      * sends state to arduino and awaits confirmation of success
      */
-    fun sendState() {
+    fun sendState(command: Int) {
+        // Instantiate the RequestQueue.
+        val queue = Volley.newRequestQueue(this)
+        // URL to update commands table
+        val url = "http://phrogers.com/ac/api/data/create.php?table=2"
+
+        // POST request body
+        val params = HashMap<String, Int>()
+        params["command"] = command
+        val body = JSONObject(params.toMap())
+
+        // Request a JSON response from the provided URL.
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, body,
+            Response.Listener { response: JSONObject ->
+                if (response.has("message")) {
+                    val successMsg = Toast.makeText(this, response["message"].toString(), Toast.LENGTH_SHORT)
+                    successMsg.show()
+                }
+                else {
+                    val errorMsg = Toast.makeText(this, "Error reading response from API", Toast.LENGTH_SHORT)
+                    errorMsg.show()
+                }
+            },
+            Response.ErrorListener { error ->
+                val errorMsg = Toast.makeText(this, "Error: request not received", Toast.LENGTH_SHORT)
+                errorMsg.show()
+            }
+        )
+        queue.add(jsonObjectRequest)
 
     }
 }
