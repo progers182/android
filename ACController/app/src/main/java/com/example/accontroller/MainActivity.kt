@@ -66,21 +66,22 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         status = findViewById(R.id.curr_state)
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(this)
-        val url = "http://www.phrogers.com/ac/api/state.php"
+        val url = "http://phrogers.com/ac/api/data/state.php"
 
         // Request a string response from the provided URL.
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             Response.Listener { response: JSONObject ->
-                if (response.has("curr_states")) {
-                    val pos = response["curr_states"].toString().toInt()
-                    status!!.setText(OPTS[pos])
+                if (response.has("state")) {
+                    val state = response["state"].toString()
+                    status!!.setText(state)
                 }
                 else {
                     status!!.setText(R.string.curr_state)
                 }
             },
             Response.ErrorListener { error ->
-                // TODO: Handle error
+                status!!.setText("Error")
+
             }
         )
         // Add the request to the RequestQueue.

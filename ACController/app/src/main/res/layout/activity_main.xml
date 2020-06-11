@@ -25,7 +25,8 @@
             android:paddingLeft="10dp"
             android:text="@string/state_display"
             android:layout_weight="1"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            />
 
         <TextView
             android:id="@+id/curr_state"
@@ -44,11 +45,27 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/pending_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/pending"
+        android:textColor="@color/pending"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <TextView
         android:id="@+id/textView"
-        android:layout_width="381dp"
-        android:layout_height="226dp"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="164dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Loading"
+        android:textColor="@color/pending"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/pending_update"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
