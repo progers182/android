@@ -61,62 +61,44 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     fun fetchState() {
         status = findViewById(R.id.curr_state)
         // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(this)
-        val url = "http://phrogers.com/ac/api/data/state.php"
-
-        // Request a JSON response from the provided URL.
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
-            Response.Listener { response: JSONObject ->
-                if (response.has("state")) {
-                    val state = response["state"].toString()
-                    status!!.setText(state)
-                }
-                else {
-                    status!!.setText(R.string.curr_state)
-                }
-            },
-            Response.ErrorListener { error ->
-                status!!.setText("Error")
-
+        val request = Requests(this)
+        request.makeRequest("GET", "state", responseHandler = { response ->
+            if (response.has("state")) {
+                val state = response["state"].toString()
+                status!!.setText(state)
+            } else {
+                status!!.setText(R.string.curr_state)
             }
-        )
-        // Add the request to the RequestQueue.
-        queue.add(jsonObjectRequest)
-
+        }, errorResponse = {
+            status!!.setText("Error")
+        })
     }
 
     /**
      * sends state to arduino and awaits confirmation of success
      */
     fun sendState(command: Int) {
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(this)
-        // URL to update commands table
-        val url = "http://phrogers.com/ac/api/data/create.php?table=2"
+        val request = Requests(this)
 
         // POST request body
         val params = HashMap<String, Int>()
         params["command"] = command
         val body = JSONObject(params.toMap())
 
-        // Request a JSON response from the provided URL.
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, body,
-            Response.Listener { response: JSONObject ->
-                if (response.has("message")) {
-                    val successMsg = Toast.makeText(this, response["message"].toString(), Toast.LENGTH_SHORT)
-                    successMsg.show()
-                }
-                else {
-                    val errorMsg = Toast.makeText(this, "Error reading response from API", Toast.LENGTH_SHORT)
-                    errorMsg.show()
-                }
-            },
-            Response.ErrorListener { error ->
-                val errorMsg = Toast.makeText(this, "Error: request not received", Toast.LENGTH_SHORT)
+        request.makeRequest("POST", "create", Pair("table", "2"), body, { response ->
+            if (response.has("message")) {
+                val successMsg =
+                    Toast.makeText(this, response["message"].toString(), Toast.LENGTH_SHORT)
+                successMsg.show()
+            } else {
+                val errorMsg =
+                    Toast.makeText(this, "Error reading response from API", Toast.LENGTH_SHORT)
                 errorMsg.show()
             }
-        )
-        queue.add(jsonObjectRequest)
-
+        }, { error ->
+            val errorMsg = Toast.makeText(this, "Error: request not received", Toast.LENGTH_SHORT)
+            errorMsg.show()
+        })
     }
+
 }

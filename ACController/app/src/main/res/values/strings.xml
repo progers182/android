@@ -13,4 +13,8 @@
         <item>Off</item>
     </string-array>
 
+    <!-- login page strings -->
+    <string name="user">Enter Username: </string>
+    <string name="password">Enter Password: </string>
+    <string name="submit">Submit</string>
 </resources>
