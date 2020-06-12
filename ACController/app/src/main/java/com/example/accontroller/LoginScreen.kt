@@ -41,11 +41,11 @@ class LoginScreen : AppCompatActivity() {
                     isAuthorized = true
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
-                } else {
-                    setContentView(R.layout.login_screen)
+                } else if (response.has("error")) {
+                    val errorText = response["error"].toString()
                     val errorMsg = Toast.makeText(
                         this,
-                        "Error: Could not authenticate",
+                        "Error: " + errorText,
                         Toast.LENGTH_SHORT
                     )
                     errorMsg.show()
@@ -64,10 +64,11 @@ class LoginScreen : AppCompatActivity() {
     fun authenticate(): Boolean {
         var isAuthorized = false
         val user = findViewById<TextView>(R.id.username_field).text.toString()
-        val pwrd = findViewById<TextView>(R.id.username_field).text.toString()
+        val pwrd = findViewById<TextView>(R.id.pwrd_field).text.toString()
 
         val params = HashMap<String, String>()
         params["username"] = user
+        params["password"] = pwrd
         val body = JSONObject(params.toMap())
 
         val request = Requests(this)
@@ -78,10 +79,9 @@ class LoginScreen : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 } else {
-                    setContentView(R.layout.login_screen)
                     val errorMsg = Toast.makeText(
                         this,
-                        "Error: Could not authenticate with the credentials given",
+                        "Error: " + response["error"].toString(),
                         Toast.LENGTH_SHORT
                     )
                     errorMsg.show()
