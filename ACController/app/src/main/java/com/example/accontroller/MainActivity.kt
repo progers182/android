@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+//        setSupportActionBar()
         // communicate with Arduino and fetch current state
         fetchState()
 
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     /**
      * sends state to arduino and awaits confirmation of success
      */
-    fun sendState(command: Int) {
+    fun sendState(command: Int) { // display pending update until arduino board reports that its state has updated
         val request = Requests(this)
 
         // POST request body
