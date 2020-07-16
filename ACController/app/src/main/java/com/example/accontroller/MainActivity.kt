@@ -1,19 +1,11 @@
 package com.example.accontroller
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
-import org.w3c.dom.Text
 
 
 val OPTS = arrayOf(
@@ -31,9 +23,10 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        setSupportActionBar()
         // communicate with Arduino and fetch current state
         fetchState()
+        // display if current state is not the same as the last command
+        isPending()
 
         status = findViewById(R.id.curr_state)
 
@@ -44,15 +37,22 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
             dialog.setCancelable(false)
             dialog.show(supportFragmentManager, "Single Choice Dialog")
         }
+
+        // refreshes activity
+        val refresh_btn = findViewById<ImageButton>(R.id.refresh)
+        refresh_btn.setOnClickListener{
+            finish();
+            startActivity(getIntent());
+        }
     }
 
     /**
      * overridden interface function that updates status value
      */
     override fun onPosBtnClick(pos: Int) {
-        currStateNum = pos
-        status!!.setText(OPTS[pos])
         sendState(pos)
+        // determine whether or not to display pendingState text
+        isPending()
     }
 
     /**
@@ -65,6 +65,13 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         request.makeRequest("GET", "state", responseHandler = { response ->
             if (response.has("state")) {
                 val state = response["state"].toString()
+
+                if (response.has("username")) {
+                    var username = findViewById<TextView>(R.id.curr_user)
+                    username.setText(response["username"].toString())
+                }
+                // update actual current state
+                currStateNum = OPTS.indexOf(state)
                 status!!.setText(state)
             } else {
                 status!!.setText(R.string.curr_state)
@@ -89,7 +96,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
             if (response.has("message")) {
                 val successMsg =
                     Toast.makeText(this, response["message"].toString(), Toast.LENGTH_SHORT)
-                successMsg.show()
+//                successMsg.show()
             } else {
                 val errorMsg =
                     Toast.makeText(this, "Error reading response from API", Toast.LENGTH_SHORT)
@@ -101,4 +108,28 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         })
     }
 
+    fun isPending() {
+        val request = Requests(this)
+        val pendingMsg = findViewById<LinearLayout>(R.id.pending_update)
+        var pendingState = findViewById<TextView>(R.id.pending_state)
+
+        request.makeRequest("GET", "queue", responseHandler =
+        {response ->
+            if ((response.has("command") && response.has("curr_state") && response["command"] == response["command"])
+                || (response.has("isUpdated") && response["isUpdated"] as Boolean)) {
+
+                pendingMsg.visibility = View.INVISIBLE
+            }
+            else {
+                if (response.has("command")) {
+                    var pos: String = response["command"].toString()
+                    pendingState.setText(OPTS[pos.toInt()])
+                }
+                pendingMsg.visibility = View.VISIBLE
+            }
+        },
+        errorResponse = {error ->
+                Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show()
+        })
+    }
 }
