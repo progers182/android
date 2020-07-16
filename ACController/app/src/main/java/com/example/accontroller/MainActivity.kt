@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
         // display if current state is not the same as the last command
         isPending()
 
+        // TODO add weather command that tells the arduino to make decisions based on current weather data (every 30 minutes or so)
+
         status = findViewById(R.id.curr_state)
 
         // create onClickListener for change state button
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {
 
         request.makeRequest("GET", "queue", responseHandler =
         {response ->
-            if ((response.has("command") && response.has("curr_state") && response["command"] == response["command"])
+            if ((response.has("command") && response.has("curr_state") && response["command"] == response["curr_state"])
                 || (response.has("isUpdated") && response["isUpdated"] as Boolean)) {
 
                 pendingMsg.visibility = View.INVISIBLE
