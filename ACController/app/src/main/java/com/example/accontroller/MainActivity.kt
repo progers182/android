@@ -14,7 +14,9 @@ val OPTS = arrayOf(
     "Low Cool",
     "High Cool",
     "Pump",
-    "Off"
+    "Off",
+    "Calibrate",
+    "Weather"
 )
 
 class MainActivity : AppCompatActivity(), AcOptsDialog.SingleChoiceListener {

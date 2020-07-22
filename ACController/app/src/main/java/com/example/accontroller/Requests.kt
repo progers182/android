@@ -13,7 +13,7 @@ class Requests(context: Context) {
 
     val body = JSONObject()
     val table = 0
-    var url = "http://phrogers.com/ac/api/data/"
+    var url = "https://phrogers.com/ac/api/data/"
     var queue: RequestQueue
 
     val requestType: HashMap<String, Int> = hashMapOf(
